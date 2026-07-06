@@ -5,15 +5,32 @@ import "testing"
 func Example_main()  {
 	main()
 	// Output:
-	// Hello world
+	// Olá, mundo
 }
 
 func TestGreet(t *testing.T)  {
-	want:= "Hello world"
+	type testCase struct {
+		language language
+		want string
+	}
 
-	got := greet()
-	
-	if got != want {
-		t.Errorf("expected: %q; got: %q", got, want)
+	cases := [...]testCase{
+		{language("en"),"Hello world"},
+		{language("pt"),"Olá, mundo"},
+		{language("es"),"Hola, mundo"},
+		{language(""),"unsupported language: \"\""},
+		{language("erro"),"unsupported language: \"erro\""},
+	}
+
+	for i := range cases {
+		language := cases[i].language
+
+		want:= cases[i].want
+
+		got := greet(language)
+
+		if got != want {
+			t.Errorf("expected: %q; got: %q", got, want)
+		}
 	}
 }
