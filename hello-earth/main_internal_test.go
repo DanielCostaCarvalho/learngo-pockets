@@ -14,23 +14,25 @@ func TestGreet(t *testing.T)  {
 		want string
 	}
 
-	cases := [...]testCase{
-		{language("en"),"Hello world"},
-		{language("pt"),"Olá, mundo"},
-		{language("es"),"Hola, mundo"},
-		{language(""),"unsupported language: \"\""},
-		{language("erro"),"unsupported language: \"erro\""},
+	cases := map[string]testCase{
+		"English": {language("en"),"Hello world"},
+		"Portuguese": {language("pt"),"Olá, mundo"},
+		"Spanish": {language("es"),"Hola, mundo"},
+		"Empty string": {language(""),"unsupported language: \"\""},
+		"Invalid string": {language("erro"),"unsupported language: \"erro\""},
 	}
 
-	for i := range cases {
-		language := cases[i].language
+	for key, currentCase := range cases {
+		t.Run(key, func(t *testing.T) {
+			language := currentCase.language
 
-		want:= cases[i].want
+			want:= currentCase.want
 
-		got := greet(language)
+			got := greet(language)
 
-		if got != want {
-			t.Errorf("expected: %q; got: %q", got, want)
-		}
+			if got != want {
+				t.Errorf("expected: %q; got: %q", got, want)
+			}
+		})
 	}
 }
