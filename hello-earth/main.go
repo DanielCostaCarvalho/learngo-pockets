@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func main()  {
+func main() {
 	var lang string
 
 	flag.StringVar(
@@ -23,9 +23,9 @@ func main()  {
 type language string
 
 var phrasebook = map[language]string{
-	"en":   "Hello world",
-	"es":   "Hola, mundo",
-	"pt":  "Olá, mundo",
+	"en": "Hello world",
+	"es": "Hola, mundo",
+	"pt": "Olá, mundo",
 }
 
 func greet(language language) string {
