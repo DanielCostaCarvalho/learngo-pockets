@@ -2,6 +2,21 @@ package main
 
 import "testing"
 
+var (
+	handmaidsTale = Book{
+		Author: "Margaret Atwood", Title: "The Handmaid's Tale",
+	}
+	oryxAndCrake = Book{
+		Author: "Margaret Atwood", Title: "Oryx and Crake",
+	}
+	theBellJar = Book{
+		Author: "Sylvia Plath", Title: "The Bell Jar",
+	}
+	janeEyre = Book{
+		Author: "Charlotte Brontë", Title: "Jane Eyre",
+	}
+)
+
 func equalBookworms(t *testing.T, bookworms, target []Bookworm) bool {
 	t.Helper()
 
@@ -43,21 +58,6 @@ func equalBooks(t *testing.T, books, target []Book) bool {
 }
 
 func TestLoadBookworms(t *testing.T) {
-	var (
-		handmaidsTale = Book{
-			Author: "Margaret Atwood", Title: "The Handmaid's Tale",
-		}
-		oryxAndCrake = Book{
-			Author: "Margaret Atwood", Title: "Oryx and Crake",
-		}
-		theBellJar = Book{
-			Author: "Sylvia Plath", Title: "The Bell Jar",
-		}
-		janeEyre = Book{
-			Author: "Charlotte Brontë", Title: "Jane Eyre",
-		}
-	)
-
 	type testCase struct {
 		bookwormFile string
 		want         []Bookworm
@@ -101,6 +101,103 @@ func TestLoadBookworms(t *testing.T) {
 
 			if !equalBookworms(t, got, want) {
 				t.Errorf("expected: %q; got: %q", got, want)
+			}
+		})
+	}
+}
+
+func equalBooksCount(t *testing.T, booksCount, target BooksCount) bool {
+	t.Helper()
+
+	if len(booksCount) != len(target) {
+		return false
+	}
+
+	for book, targetCount := range target {
+		count, ok := booksCount[book]
+		if !ok || targetCount != count {
+			return false
+		}
+	}
+
+	return true
+}
+
+func TestBooksCount(t *testing.T) {
+	type testCase struct {
+		bookworms []Bookworm
+		want      BooksCount
+	}
+
+	cases := map[string]testCase{
+		"No Bookworm": {
+			[]Bookworm{},
+			BooksCount{},
+		},
+		"Valid bookworm": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{handmaidsTale, oryxAndCrake},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{handmaidsTale, theBellJar},
+				},
+			},
+			BooksCount{handmaidsTale: 2, oryxAndCrake: 1, theBellJar: 1},
+		},
+		"Bookworm with the same book twice": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{handmaidsTale, handmaidsTale, oryxAndCrake},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{handmaidsTale, theBellJar},
+				},
+			},
+			BooksCount{handmaidsTale: 3, oryxAndCrake: 1, theBellJar: 1},
+		},
+		"Bookworm without books": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{},
+				},
+			},
+			BooksCount{},
+		},
+		"Bookworm with nil books": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: nil,
+				},
+				{
+					Name:  "Test 2",
+					Books: nil,
+				},
+			},
+			BooksCount{},
+		},
+	}
+
+	for key, currentCase := range cases {
+		t.Run(key, func(t *testing.T) {
+			bookworms := currentCase.bookworms
+
+			want := currentCase.want
+
+			got := booksCount(bookworms)
+
+			if !equalBooksCount(t, got, want) {
+				t.Errorf("expected: %v; got: %v", got, want)
 			}
 		})
 	}
