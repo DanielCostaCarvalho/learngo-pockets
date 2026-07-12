@@ -202,3 +202,96 @@ func TestBooksCount(t *testing.T) {
 		})
 	}
 }
+
+func TestCommonBooks(t *testing.T) {
+	type testCase struct {
+		bookworms []Bookworm
+		want      []Book
+	}
+
+	cases := map[string]testCase{
+		"No Bookworm": {
+			[]Bookworm{},
+			[]Book{},
+		},
+		"Valid bookworm": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{handmaidsTale, oryxAndCrake},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{handmaidsTale, theBellJar},
+				},
+			},
+			[]Book{handmaidsTale},
+		},
+		"Bookworm with the same book twice": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{handmaidsTale, handmaidsTale, oryxAndCrake},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{handmaidsTale, theBellJar},
+				},
+			},
+			[]Book{handmaidsTale},
+		},
+		"Bookworm with two common books": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{handmaidsTale, oryxAndCrake},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{handmaidsTale, oryxAndCrake},
+				},
+			},
+			[]Book{oryxAndCrake, handmaidsTale},
+		},
+		"Bookworm without books": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: []Book{},
+				},
+				{
+					Name:  "Test 2",
+					Books: []Book{},
+				},
+			},
+			[]Book{},
+		},
+		"Bookworm with nil books": {
+			[]Bookworm{
+				{
+					Name:  "Test 1",
+					Books: nil,
+				},
+				{
+					Name:  "Test 2",
+					Books: nil,
+				},
+			},
+			[]Book{},
+		},
+	}
+
+	for key, currentCase := range cases {
+		t.Run(key, func(t *testing.T) {
+			bookworms := currentCase.bookworms
+
+			want := currentCase.want
+
+			got := findCommonBooks(bookworms)
+
+			if !equalBooks(t, got, want) {
+				t.Errorf("expected: %v; got: %v", got, want)
+			}
+		})
+	}
+}

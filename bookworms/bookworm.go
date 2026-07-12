@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"sort"
 )
 
 type Bookworm struct {
@@ -35,6 +36,7 @@ func loadBookworms(filepath string) ([]Bookworm, error) {
 
 type BooksCount map[Book]uint
 
+// retorna a contagem de livros
 func booksCount(bookworms []Bookworm) BooksCount {
 	count := make(BooksCount)
 
@@ -45,4 +47,31 @@ func booksCount(bookworms []Bookworm) BooksCount {
 	}
 
 	return count
+}
+
+// retorna livros em comum
+func findCommonBooks(bookworms []Bookworm) []Book {
+	booksCount := booksCount(bookworms)
+
+	var commonBooks []Book
+
+	for book, count := range booksCount {
+		if count > 1 {
+			commonBooks = append(commonBooks, book)
+		}
+	}
+
+	return sortBooks(commonBooks)
+}
+
+// retorna livros ordenados
+func sortBooks(books []Book) []Book {
+	sort.Slice(books, func(index1, index2 int) bool {
+		if books[index1].Author != books[index2].Author {
+			return books[index1].Author < books[index2].Author
+		}
+
+		return books[index1].Title < books[index2].Title
+	})
+	return books
 }
