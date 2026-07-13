@@ -3,17 +3,11 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"sort"
 )
 
 type Bookworm struct {
 	Name  string `json:"name"`
 	Books []Book `json:"books"`
-}
-
-type Book struct {
-	Author string `json:"author"`
-	Title  string `json:"title"`
 }
 
 // lê o arquivo e faz parse para slice de Bookworm
@@ -62,16 +56,4 @@ func findCommonBooks(bookworms []Bookworm) []Book {
 	}
 
 	return sortBooks(commonBooks)
-}
-
-// retorna livros ordenados
-func sortBooks(books []Book) []Book {
-	sort.Slice(books, func(index1, index2 int) bool {
-		if books[index1].Author != books[index2].Author {
-			return books[index1].Author < books[index2].Author
-		}
-
-		return books[index1].Title < books[index2].Title
-	})
-	return books
 }

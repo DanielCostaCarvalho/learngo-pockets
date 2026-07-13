@@ -23,5 +23,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(bookworms)
+	commonBooks := findCommonBooks(bookworms)
+
+	fmt.Println("Here are the books in common:")
+
+	for _, book := range commonBooks {
+		fmt.Println(book.toString())
+	}
 }
