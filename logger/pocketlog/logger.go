@@ -13,12 +13,19 @@ type Logger struct {
 }
 
 // New retorna um logger que escreve a partir do nível solicitado
+// Adiciona uma lista de configurarion functions para ajustá-lo a seu gosto
 // O output padrão é Stdout
-func New(threshold Level, output io.Writer) *Logger {
-	return &Logger{
+func New(threshold Level, options ...Option) *Logger {
+	logger := &Logger{
 		threshold: threshold,
-		output:    output,
+		output:    os.Stdout,
 	}
+
+	for _, configFunc := range options {
+		configFunc(logger)
+	}
+
+	return logger
 }
 
 // Debugf formata e exibe mensagem no nível debug
