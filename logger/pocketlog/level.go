@@ -11,3 +11,16 @@ const (
 	// LevelError representa o maior nível de log, usado para erros.
 	LevelError = iota
 )
+
+func (level *Level) Name() string {
+	switch *level {
+	case LevelDebug:
+		return "debug"
+	case LevelInfo:
+		return "info"
+	case LevelError:
+		return "error"
+	default:
+		return ""
+	}
+}

@@ -13,7 +13,7 @@ func ExampleLogger_Debugf() {
 	)
 
 	debugLogger.Debugf("Teste %s", "debug")
-	// Output: Teste debug
+	// Output: [DEBUG]: Teste debug
 }
 
 type testWriter struct {
@@ -41,18 +41,18 @@ func TestLogger(t *testing.T) {
 	testCases := map[string]testCase{
 		"debug": {
 			pocketlog.LevelDebug,
-			debugMessage + "\n" +
-				infoMessage + "\n" +
-				errorMessage + "\n",
+			"[DEBUG]: " + debugMessage + "\n" +
+				"[INFO]: " + infoMessage + "\n" +
+				"[ERROR]: " + errorMessage + "\n",
 		},
 		"info": {
 			pocketlog.LevelInfo,
-			infoMessage + "\n" +
-				errorMessage + "\n",
+			"[INFO]: " + infoMessage + "\n" +
+				"[ERROR]: " + errorMessage + "\n",
 		},
 		"error": {
 			pocketlog.LevelError,
-			errorMessage + "\n",
+			"[ERROR]: " + errorMessage + "\n",
 		},
 	}
 
@@ -64,6 +64,52 @@ func TestLogger(t *testing.T) {
 			logger.Debugf(debugMessage)
 			logger.Infof(infoMessage)
 			logger.Errorf(errorMessage)
+
+			if tw.contents != tc.expected {
+				t.Errorf("Invalid contents. Expected %q, got %q", tc.expected, tw.contents)
+			}
+		})
+	}
+}
+
+func TestLoggerLogf(t *testing.T) {
+	type testCase struct {
+		level    pocketlog.Level
+		expected string
+	}
+
+	const (
+		debugMessage = "debug"
+		infoMessage  = "info"
+		errorMessage = "error"
+	)
+
+	testCases := map[string]testCase{
+		"debug": {
+			pocketlog.LevelDebug,
+			"[DEBUG]: " + debugMessage + "\n" +
+				"[INFO]: " + infoMessage + "\n" +
+				"[ERROR]: " + errorMessage + "\n",
+		},
+		"info": {
+			pocketlog.LevelInfo,
+			"[INFO]: " + infoMessage + "\n" +
+				"[ERROR]: " + errorMessage + "\n",
+		},
+		"error": {
+			pocketlog.LevelError,
+			"[ERROR]: " + errorMessage + "\n",
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			tw := &testWriter{}
+			logger := pocketlog.New(tc.level, pocketlog.WithOutput(tw))
+
+			logger.Logf(pocketlog.LevelDebug, debugMessage)
+			logger.Logf(pocketlog.LevelInfo, infoMessage)
+			logger.Logf(pocketlog.LevelError, errorMessage)
 
 			if tw.contents != tc.expected {
 				t.Errorf("Invalid contents. Expected %q, got %q", tc.expected, tw.contents)

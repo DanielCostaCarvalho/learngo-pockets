@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 // Logger é usado para fazer log de informações
@@ -30,22 +31,22 @@ func New(threshold Level, options ...Option) *Logger {
 
 // Debugf formata e exibe mensagem no nível debug
 func (logger *Logger) Debugf(format string, args ...any) {
-	logger.logfByLevel(LevelDebug, format, args...)
+	logger.Logf(LevelDebug, format, args...)
 }
 
 // Infof formata e exibe mensagem no nível info
 func (logger *Logger) Infof(format string, args ...any) {
-	logger.logfByLevel(LevelInfo, format, args...)
+	logger.Logf(LevelInfo, format, args...)
 }
 
 // Errorf formata e exibe mensagem no nível error
 func (logger *Logger) Errorf(format string, args ...any) {
-	logger.logfByLevel(LevelError, format, args...)
+	logger.Logf(LevelError, format, args...)
 }
 
-// logfByLevel verifica se o nível é compativel e formata e envia o log
+// Logf verifica se o nível é compativel e formata e envia o log
 // para o output
-func (logger *Logger) logfByLevel(level Level, format string, args ...any) {
+func (logger *Logger) Logf(level Level, format string, args ...any) {
 	if logger.threshold > level {
 		return
 	}
@@ -54,5 +55,9 @@ func (logger *Logger) logfByLevel(level Level, format string, args ...any) {
 		logger.output = os.Stdout
 	}
 
-	_, _ = fmt.Fprintf(logger.output, format+"\n", args...)
+	_, _ = fmt.Fprintf(
+		logger.output,
+		"["+strings.ToUpper(level.Name())+"]: "+format+"\n",
+		args...,
+	)
 }
